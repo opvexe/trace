@@ -1,0 +1,39 @@
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: Orderer
+    Domain: trace.com
+    Specs:
+      - Hostname: orderer  # orderer.trace.com
+
+PeerOrgs:
+  # ---------------------------------------------------------------------------
+  # Org1
+  # ---------------------------------------------------------------------------
+  - Name: Dairy
+    Domain: dairy.trace.com
+    EnableNodeOUs: false
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+
+  # ---------------------------------------------------------------------------
+  # Org2: See "Org1" for full specification
+  # ---------------------------------------------------------------------------
+  - Name: Machining
+    Domain: machining.trace.com
+    EnableNodeOUs: false
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+
+  - Name: Sale
+    Domain: sale.trace.com
+    EnableNodeOUs: false
+    Template:
+      Count: 2
+    Users:
+      Count: 1

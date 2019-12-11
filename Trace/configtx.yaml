@@ -1,0 +1,121 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+---
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: crypto-config/ordererOrganizations/trace.com/msp
+    - &OrgDairy
+        Name: OrgDairyMSP
+        ID: OrgDairyMSP
+        MSPDir: crypto-config/peerOrganizations/dairy.trace.com/msp
+        AnchorPeers:
+            - Host: peer0.dairy.trace.com
+              Port: 7051
+
+    - &OrgMachining
+        Name: OrgMachiningMSP
+        ID: OrgMachiningMSP
+        MSPDir: crypto-config/peerOrganizations/machining.trace.com/msp
+        AnchorPeers:
+            - Host: peer0.machining.trace.com
+              Port: 7051
+
+    - &OrgSale
+        Name: OrgSaleMSP
+
+        ID: OrgSaleMSP
+        MSPDir: crypto-config/peerOrganizations/sale.trace.com/msp
+        AnchorPeers:
+            - Host: peer0.sale.trace.com
+              Port: 7051
+
+Capabilities:
+    Global: &ChannelCapabilities
+        V1_1: true
+
+    Orderer: &OrdererCapabilities
+        V1_1: true
+
+    Application: &ApplicationCapabilities
+        V1_2: true
+
+################################################################################
+#
+#   SECTION: Application
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for application related parameters
+#
+################################################################################
+Application: &ApplicationDefaults
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the application side of the network
+    Organizations:
+
+################################################################################
+#
+#   SECTION: Orderer
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for orderer related parameters
+#
+################################################################################
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    Addresses:
+        - orderer.trace.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Kafka:
+        Brokers:
+            - 127.0.0.1:9092
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the orderer side of the network
+    Organizations:
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    Genesis:
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *OrgDairy
+                    - *OrgMachining
+                    - *OrgSale
+    Channel:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *OrgDairy
+                - *OrgMachining
+                - *OrgSale
+            Capabilities:
+                <<: *ApplicationCapabilities
